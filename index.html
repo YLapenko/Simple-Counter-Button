@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Счётчик нажатий PWA</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4CAF50">
+    <style>
+        * {
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e2a3a 0%, #0f1724 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: manipulation;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 48px;
+            padding: 32px 24px 40px;
+            text-align: center;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 280px;
+        }
+
+        .counter {
+            font-size: 96px;
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            margin: 20px 0;
+            letter-spacing: 4px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 80px;
+            padding: 20px 0;
+            font-feature-settings: "tnum";
+        }
+
+        button {
+            background: #4CAF50;
+            border: none;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            padding: 18px 32px;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #1b5e20;
+            transition: 0.07s linear;
+            width: 100%;
+            touch-action: manipulation;
+            font-family: inherit;
+        }
+
+        button:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #1b5e20;
+        }
+
+        .reset-btn {
+            background: #ff5722;
+            box-shadow: 0 5px 0 #b13e18;
+            font-size: 18px;
+            margin-top: 20px;
+            padding: 12px 20px;
+        }
+
+        .reset-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #b13e18;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin: 0 0 12px 0;
+            color: #f0f0f0;
+            font-weight: 500;
+        }
+
+        .sub {
+            color: #aaa;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>📱 PWA Счётчик</h1>
+        <div class="counter" id="counterDisplay">0</div>
+        <button id="incrementBtn">➕ Нажми меня</button>
+        <button id="resetBtn" class="reset-btn">🔄 Сбросить</button>
+        <div class="sub">
+            ⚡ Работает офлайн<br>
+            💾 Сохраняет после закрытия
+        </div>
+    </div>
+
+    <script>
+        // ----- Загрузка сохранённого счётчика из localStorage -----
+        let count = localStorage.getItem('clickCounter');
+        if (count === null) {
+            count = 0;
+        } else {
+            count = parseInt(count, 10);
+        }
+
+        const counterDisplay = document.getElementById('counterDisplay');
+        const incrementBtn = document.getElementById('incrementBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Обновление интерфейса
+        function updateUI() {
+            counterDisplay.textContent = count;
+            // Сохраняем в локальное хранилище
+            localStorage.setItem('clickCounter', count);
+        }
+
+        // Увеличение счётчика
+        function increment() {
+            count++;
+            updateUI();
+            
+            // Лёгкая вибрация на мобильных (если разрешено)
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(20);
+            }
+        }
+
+        // Сброс
+        function reset() {
+            count = 0;
+            updateUI();
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(10);
+            }
+        }
+
+        // Назначаем обработчики
+        incrementBtn.addEventListener('click', increment);
+        resetBtn.addEventListener('click', reset);
+
+        // Первоначальный рендер
+        updateUI();
+
+        // Регистрация Service Worker для PWA (офлайн + установка)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(reg => {
+                    console.log('✅ Service Worker зарегистрирован:', reg.scope);
+                }).catch(err => {
+                    console.error('❌ Ошибка SW:', err);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
