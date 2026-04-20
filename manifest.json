@@ -2,7 +2,7 @@
   "name": "Счётчик нажатий",
   "short_name": "TapCounter",
   "description": "Простое PWA с кнопкой и счётчиком кликов. Работает офлайн.",
-  "start_url": "https://ylapenko.github.io/Simple-Counter-Button/",
+  "start_url": "https://ylapenko.github.io/Simple-Counter-Button",
   "display": "standalone",
   "theme_color": "#4CAF50",
   "background_color": "#0f1724",
