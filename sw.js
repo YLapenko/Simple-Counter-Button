@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tap-counter-v1';
+const CACHE_NAME = 'tap-counter-v2';
 const urlsToCache = [
   '/',
   '/index.html',
